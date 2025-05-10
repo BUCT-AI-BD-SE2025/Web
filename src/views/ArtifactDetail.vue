@@ -53,8 +53,7 @@ const artifact = ref(null)
 const showImageViewer = ref(false)
 const recommendedArtifacts = ref([])
 
-
-const placeholder = ''
+const placeholder = '' // 可以替换为默认图片路径
 
 const allArtifacts = [
   { id: 1, name: '青铜鼎', type: '青铜器', description: '青铜时代的器物', image: '' },
@@ -63,7 +62,9 @@ const allArtifacts = [
   { id: 4, name: '书法卷轴', type: '书法', description: '明代书法艺术', image: '' },
   { id: 5, name: '石雕佛像', type: '雕塑', description: '汉代石雕艺术', image: '' },
   { id: 6, name: '漆器盒', type: '漆器', description: '精美的漆器盒', image: '' },
-  { id: 7, name: '青花瓷瓶', type: '陶瓷', description: '元代青花瓷', image: '' }
+  { id: 7, name: '青花瓷瓶', type: '陶瓷', description: '元代青花瓷', image: '' },
+  { id: 8, name: '古琴', type: '乐器', description: '古代弦乐器', image: '' },
+  { id: 9, name: '青铜剑', type: '青铜器', description: '战国时期武器', image: '' }
 ]
 
 const loadArtifact = () => {
@@ -71,23 +72,34 @@ const loadArtifact = () => {
   artifact.value = allArtifacts.find(item => item.id === id)
 
   if (artifact.value) {
-    recommendedArtifacts.value = allArtifacts
-      .filter(item => item.type === artifact.value.type && item.id !== artifact.value.id)
-      .slice(0, 4)
+    let sameType = allArtifacts.filter(
+      item => item.type === artifact.value.type && item.id !== artifact.value.id
+    )
+
+    if (sameType.length < 4) {
+      const others = allArtifacts.filter(
+        item => item.type !== artifact.value.type && item.id !== artifact.value.id
+      )
+      const shuffledOthers = others.sort(() => 0.5 - Math.random())
+      const needed = 4 - sameType.length
+      sameType = sameType.concat(shuffledOthers.slice(0, needed))
+    }
+
+    recommendedArtifacts.value = sameType.slice(0, 4)
   } else {
     recommendedArtifacts.value = []
   }
 }
 
 onMounted(loadArtifact)
-watch(() => route.query.id, loadArtifact)
+watch(() => route.query.id, loadArtifact, { immediate: true })
 
 function goBack() {
   router.back()
 }
 
 function goToDetail(id) {
-  router.push({ path: '/artifact-detail', query: { id } })
+  router.push({ path: '/artifact', query: { id } })
 }
 
 function openImageViewer() {
@@ -203,6 +215,10 @@ function closeImageViewer() {
 
 .recommend-item:hover {
   transform: scale(1.05);
+}
+
+.recommend-item:active {
+  transform: scale(0.95);
 }
 
 .recommend-item p {

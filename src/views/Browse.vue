@@ -41,13 +41,6 @@
             <option value="明代">明代</option>
           </select>
 
-          <label>博物馆：</label>
-          <select v-model="selectedMuseum">
-            <option value="">全部</option>
-            <option value="大英博物馆">大英博物馆</option>
-            <option value="大都会博物馆">大都会博物馆</option>
-            <option value="故宫博物院">故宫博物院</option>
-          </select>
         </div>
 
         <div class="sort-group">
